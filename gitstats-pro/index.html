@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="GitStats Pro — Advanced GitHub Profile Analytics Dashboard" />
+  <title>GitStats Pro — GitHub Profile Analytics</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- html2canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+  <header class="header" id="header">
+    <div class="header-content">
+      <div class="logo" onclick="goHome()" title="GitStats Pro">
+        <svg class="github-icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+            0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01
+            1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
+            0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27
+            2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82
+            1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01
+            2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        <span class="logo-text">GitStats <span class="logo-pro">Pro</span></span>
+      </div>
+      <div class="header-actions">
+        <span id="pro-badge-header" class="pro-badge-header hidden">✨ PRO</span>
+        <button id="compare-btn" class="btn-compare hidden" onclick="openCompareModal()" title="Compare two profiles" aria-label="Compare profiles">
+          <i class="fas fa-code-compare"></i> Compare
+        </button>
+        <button id="theme-toggle" class="theme-toggle" title="Toggle theme" aria-label="Toggle light/dark theme">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button id="upgrade-btn" class="btn-upgrade" onclick="showProModal()" aria-label="Upgrade to Pro">
+          <i class="fas fa-crown"></i> Upgrade to Pro
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════ SEARCH PAGE ═══════════════════════════ -->
+  <section id="search-page" class="search-page">
+    <div class="search-hero">
+      <div class="search-hero-bg" aria-hidden="true">
+        <div class="hero-grid"></div>
+      </div>
+      <div class="search-content">
+        <div class="hero-icon" aria-hidden="true">
+          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+              0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01
+              1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
+              0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27
+              2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82
+              1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01
+              2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+        </div>
+
+        <h1 class="hero-title">GitHub Profile <span class="accent">Analytics</span></h1>
+        <p class="hero-subtitle">
+          Discover deep insights about any GitHub developer.<br />
+          Stars, streaks, languages, contributions &amp; more.
+        </p>
+
+        <div class="search-box-wrapper">
+          <div class="search-box" id="search-box">
+            <i class="fas fa-search search-icon" aria-hidden="true"></i>
+            <input
+              type="text"
+              id="username-input"
+              class="search-input"
+              placeholder="Enter GitHub username (e.g. torvalds)"
+              autocomplete="off"
+              spellcheck="false"
+              aria-label="GitHub username"
+            />
+            <button id="analyze-btn" class="analyze-btn" aria-label="Analyze profile">
+              <span class="btn-text">Analyze</span>
+              <span class="btn-loader hidden" aria-hidden="true"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
+          </div>
+          <div id="search-error" class="search-error hidden" role="alert"></div>
+        </div>
+
+        <!-- Recent Searches -->
+        <div id="recent-searches" class="recent-searches hidden" aria-label="Recent searches">
+          <span class="recent-label"><i class="fas fa-history"></i> Recent:</span>
+          <div id="recent-list" class="recent-list"></div>
+          <button id="clear-recent" class="clear-recent" title="Clear recent searches" aria-label="Clear recent searches">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <!-- Feature Pills -->
+        <div class="feature-pills" aria-hidden="true">
+          <span class="pill"><i class="fas fa-chart-pie"></i> 5 Charts</span>
+          <span class="pill"><i class="fas fa-fire"></i> Streaks</span>
+          <span class="pill"><i class="fas fa-th"></i> Heatmap</span>
+          <span class="pill"><i class="fas fa-medal"></i> Badges</span>
+          <span class="pill"><i class="fas fa-file-image"></i> PNG Export</span>
+          <span class="pill"><i class="fas fa-share-alt"></i> Share Link</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ DASHBOARD ═══════════════════════════ -->
+  <section id="dashboard" class="dashboard hidden">
+    <div class="dashboard-container">
+
+      <!-- Back Button -->
+      <button class="back-btn" onclick="goHome()" aria-label="Back to search">
+        <i class="fas fa-arrow-left"></i> New Search
+      </button>
+
+      <!-- ─── Loading Skeleton ─── -->
+      <div id="loading-skeleton" class="loading-skeleton" aria-label="Loading profile data" aria-busy="true">
+        <div class="skeleton-profile card">
+          <div class="skeleton-avatar shimmer"></div>
+          <div class="skeleton-info">
+            <div class="skeleton-line shimmer" style="width:40%"></div>
+            <div class="skeleton-line shimmer" style="width:30%"></div>
+            <div class="skeleton-line shimmer" style="width:55%"></div>
+          </div>
+        </div>
+        <div class="skeleton-stats">
+          <div class="skeleton-card shimmer"></div>
+          <div class="skeleton-card shimmer"></div>
+          <div class="skeleton-card shimmer"></div>
+          <div class="skeleton-card shimmer"></div>
+        </div>
+        <div class="skeleton-repos">
+          <div class="skeleton-card-tall shimmer"></div>
+          <div class="skeleton-card-tall shimmer"></div>
+          <div class="skeleton-card-tall shimmer"></div>
+        </div>
+      </div>
+
+      <!-- ─── Dashboard Content ─── -->
+      <div id="dashboard-content" class="hidden">
+
+        <!-- ── PROFILE SECTION ── -->
+        <div id="profile-section" class="profile-section card">
+          <div class="profile-left">
+            <div class="avatar-wrapper">
+              <img id="profile-avatar" src="" alt="" class="profile-avatar" />
+              <span id="profile-hireable" class="hireable-badge hidden" title="Open to work">FOR HIRE</span>
+            </div>
+          </div>
+          <div class="profile-right">
+            <div class="profile-header-row">
+              <div>
+                <h2 id="profile-name" class="profile-name"></h2>
+                <a id="profile-login-link" href="#" target="_blank" rel="noopener" class="profile-login"></a>
+              </div>
+              <a id="profile-github-link" href="#" target="_blank" rel="noopener" class="btn-outline">
+                <i class="fab fa-github"></i> View Profile
+              </a>
+            </div>
+            <p id="profile-bio" class="profile-bio"></p>
+            <div class="profile-meta" id="profile-meta">
+              <span id="pm-company" class="meta-item hidden"><i class="fas fa-building"></i><span id="pm-company-val"></span></span>
+              <span id="pm-location" class="meta-item hidden"><i class="fas fa-map-marker-alt"></i><span id="pm-location-val"></span></span>
+              <span id="pm-website" class="meta-item hidden"><i class="fas fa-link"></i><a id="pm-website-link" href="#" target="_blank" rel="noopener"></a></span>
+              <span id="pm-twitter" class="meta-item hidden"><i class="fab fa-x-twitter"></i><a id="pm-twitter-link" href="#" target="_blank" rel="noopener"></a></span>
+              <span class="meta-item"><i class="fas fa-calendar-alt"></i><span id="pm-joined"></span></span>
+            </div>
+            <div class="profile-counts">
+              <div class="profile-count-item">
+                <span id="cnt-followers" class="count-num">0</span>
+                <span class="count-label">Followers</span>
+              </div>
+              <div class="profile-count-item">
+                <span id="cnt-following" class="count-num">0</span>
+                <span class="count-label">Following</span>
+              </div>
+              <div class="profile-count-item">
+                <span id="cnt-repos" class="count-num">0</span>
+                <span class="count-label">Repos</span>
+              </div>
+              <div class="profile-count-item">
+                <span id="cnt-gists" class="count-num">0</span>
+                <span class="count-label">Gists</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── STATS GRID ── -->
+        <div class="section-header">
+          <h3 class="section-title"><i class="fas fa-chart-pie"></i> Statistics</h3>
+        </div>
+        <div id="stats-grid" class="stats-grid">
+
+          <!-- Free stats -->
+          <div class="stat-card" id="sc-stars">
+            <div class="stat-card-icon" style="background:linear-gradient(135deg,#f6d365,#fda085)"><i class="fas fa-star"></i></div>
+            <div class="stat-card-body">
+              <span class="stat-num" id="sv-stars">—</span>
+              <span class="stat-lbl">Total Stars</span>
+            </div>
+          </div>
+
+          <div class="stat-card" id="sc-forks">
+            <div class="stat-card-icon" style="background:linear-gradient(135deg,#43e97b,#38f9d7)"><i class="fas fa-code-branch"></i></div>
+            <div class="stat-card-body">
+              <span class="stat-num" id="sv-forks">—</span>
+              <span class="stat-lbl">Total Forks</span>
+            </div>
+          </div>
+
+          <div class="stat-card" id="sc-repos">
+            <div class="stat-card-icon" style="background:linear-gradient(135deg,#4facfe,#00f2fe)"><i class="fas fa-book"></i></div>
+            <div class="stat-card-body">
+              <span class="stat-num" id="sv-repos">—</span>
+              <span class="stat-lbl">Repositories</span>
+            </div>
+          </div>
+
+          <div class="stat-card" id="sc-commits">
+            <div class="stat-card-icon" style="background:linear-gradient(135deg,#a8edea,#fed6e3)"><i class="fas fa-code-commit"></i></div>
+            <div class="stat-card-body">
+              <span class="stat-num" id="sv-commits">—</span>
+              <span class="stat-lbl">Recent Commits</span>
+            </div>
+          </div>
+
+          <!-- Pro stats (locked for free tier) -->
+          <div class="stat-card pro-locked" id="sc-prs">
+            <div class="pro-lock-overlay" onclick="showProModal()" role="button" tabindex="0" aria-label="Unlock Pro feature">
+              <i class="fas fa-lock"></i><span>Pro Feature</span>
+            </div>
+            <div class="stat-card-icon" style="background:linear-gradient(135deg,#667eea,#764ba2)"><i class="fas fa-code-pull-request"></i></div>
+            <div class="stat-card-body">
+              <span class="stat-num" id="sv-prs">—</span>
+              <span class="stat-lbl">Pull Requests</span>
+            </div>
+          </div>
+
+          <div class="stat-card pro-locked" id="sc-issues">
+            <div class="pro-lock-overlay" onclick="showProModal()" role="button" tabindex="0" aria-label="Unlock Pro feature">
+              <i class="fas fa-lock"></i><span>Pro Feature</span>
+            </div>
+            <div class="stat-card-icon" style="background:linear-gradient(135deg,#f093fb,#f5576c)"><i class="fas fa-circle-exclamation"></i></div>
+            <div class="stat-card-body">
+              <span class="stat-num" id="sv-issues">—</span>
+              <span class="stat-lbl">Issues Opened</span>
+            </div>
+          </div>
+
+          <div class="stat-card pro-locked" id="sc-streak-best">
+            <div class="pro-lock-overlay" onclick="showProModal()" role="button" tabindex="0" aria-label="Unlock Pro feature">
+              <i class="fas fa-lock"></i><span>Pro Feature</span>
+            </div>
+            <div class="stat-card-icon" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)"><i class="fas fa-trophy"></i></div>
+            <div class="stat-card-body">
+              <span class="stat-num" id="sv-streak-best">—</span>
+              <span class="stat-lbl">Longest Streak</span>
+            </div>
+          </div>
+
+          <div class="stat-card pro-locked" id="sc-streak-cur">
+            <div class="pro-lock-overlay" onclick="showProModal()" role="button" tabindex="0" aria-label="Unlock Pro feature">
+              <i class="fas fa-lock"></i><span>Pro Feature</span>
+            </div>
+            <div class="stat-card-icon" style="background:linear-gradient(135deg,#fd7043,#ff8a65)"><i class="fas fa-fire"></i></div>
+            <div class="stat-card-body">
+              <span class="stat-num" id="sv-streak-cur">—</span>
+              <span class="stat-lbl">Current Streak</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── DEVELOPER SCORE (PRO) ── -->
+        <div class="pro-section-wrapper" id="dev-score-section">
+          <div class="section-header">
+            <h3 class="section-title"><i class="fas fa-ranking-star"></i> Developer Score</h3>
+            <span class="pro-tag">PRO</span>
+          </div>
+          <div id="dev-score-lock" class="section-lock-overlay" onclick="showProModal()" role="button" tabindex="0" aria-label="Unlock Developer Score">
+            <div class="lock-content">
+              <i class="fas fa-lock lock-icon"></i>
+              <h4>Developer Score</h4>
+              <p>Your GitHub rank out of 1000 — stars, activity, age &amp; more</p>
+              <button class="btn-unlock" tabindex="-1"><i class="fas fa-crown"></i> Unlock with Pro</button>
+            </div>
+          </div>
+          <div class="card" id="dev-score-card"></div>
+        </div>
+
+        <!-- ── CHARTS SECTION (PRO) ── -->
+        <div class="pro-section-wrapper" id="charts-section">
+          <div class="section-header">
+            <h3 class="section-title"><i class="fas fa-chart-line"></i> Analytics Charts</h3>
+            <span class="pro-tag">PRO</span>
+          </div>
+          <div id="charts-lock" class="section-lock-overlay" onclick="showProModal()" role="button" tabindex="0" aria-label="Unlock Analytics Charts">
+            <div class="lock-content">
+              <i class="fas fa-lock lock-icon"></i>
+              <h4>Analytics Charts</h4>
+              <p>5 detailed charts: languages, commit activity, stars, repo sizes &amp; more</p>
+              <button class="btn-unlock" tabindex="-1"><i class="fas fa-crown"></i> Unlock with Pro</button>
+            </div>
+          </div>
+          <div class="charts-grid" id="charts-grid">
+            <div class="chart-card">
+              <h4 class="chart-title"><i class="fas fa-code"></i> Top Languages</h4>
+              <div class="chart-wrap chart-donut-wrap"><canvas id="chart-languages"></canvas></div>
+              <div id="lang-legend" class="lang-legend"></div>
+            </div>
+            <div class="chart-card">
+              <h4 class="chart-title"><i class="fas fa-code-commit"></i> Commit Activity (90 days)</h4>
+              <div class="chart-wrap"><canvas id="chart-commits"></canvas></div>
+            </div>
+            <div class="chart-card chart-span-2">
+              <h4 class="chart-title"><i class="fas fa-star"></i> Stars per Repo (Top 10)</h4>
+              <div class="chart-wrap chart-bar-wrap"><canvas id="chart-stars"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <h4 class="chart-title"><i class="fas fa-database"></i> Repo Size Distribution</h4>
+              <div class="chart-wrap"><canvas id="chart-size"></canvas></div>
+            </div>
+            <div class="chart-card">
+              <h4 class="chart-title"><i class="fas fa-users"></i> Followers Overview</h4>
+              <div class="chart-wrap"><canvas id="chart-followers"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── HEATMAP SECTION (PRO) ── -->
+        <div class="pro-section-wrapper" id="heatmap-section">
+          <div class="section-header">
+            <h3 class="section-title"><i class="fas fa-th"></i> Contribution Heatmap</h3>
+            <span class="pro-tag">PRO</span>
+          </div>
+          <div id="heatmap-lock" class="section-lock-overlay" onclick="showProModal()" role="button" tabindex="0" aria-label="Unlock Contribution Heatmap">
+            <div class="lock-content">
+              <i class="fas fa-lock lock-icon"></i>
+              <h4>Contribution Heatmap</h4>
+              <p>GitHub-style activity grid for the last 52 weeks</p>
+              <button class="btn-unlock" tabindex="-1"><i class="fas fa-crown"></i> Unlock with Pro</button>
+            </div>
+          </div>
+          <div class="card heatmap-card" id="heatmap-container">
+            <div class="heatmap-months" id="heatmap-months"></div>
+            <div class="heatmap-body">
+              <div class="heatmap-days">
+                <span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span>
+              </div>
+              <div id="heatmap-grid" class="heatmap-grid" aria-label="Contribution heatmap"></div>
+            </div>
+            <div class="heatmap-legend">
+              <span class="legend-text">Less</span>
+              <div class="legend-cells">
+                <div class="legend-cell" data-level="0"></div>
+                <div class="legend-cell" data-level="1"></div>
+                <div class="legend-cell" data-level="2"></div>
+                <div class="legend-cell" data-level="3"></div>
+                <div class="legend-cell" data-level="4"></div>
+              </div>
+              <span class="legend-text">More</span>
+            </div>
+          </div>
+          <div id="heatmap-tooltip" class="heatmap-tooltip hidden" role="tooltip"></div>
+        </div>
+
+        <!-- ── TOP REPOSITORIES ── -->
+        <div class="section-header">
+          <h3 class="section-title"><i class="fas fa-book-bookmark"></i> Top Repositories</h3>
+          <span id="repos-note" class="section-note free-note">
+            Top 3 shown — <button class="link-btn" onclick="showProModal()">Upgrade for all 6</button>
+          </span>
+        </div>
+        <div id="repos-grid" class="repos-grid"></div>
+
+        <!-- ── REPO TIMELINE (PRO) ── -->
+        <div class="pro-section-wrapper" id="timeline-section">
+          <div class="section-header">
+            <h3 class="section-title"><i class="fas fa-timeline"></i> Repo Timeline</h3>
+            <span class="pro-tag">PRO</span>
+          </div>
+          <div id="timeline-lock" class="section-lock-overlay" onclick="showProModal()" role="button" tabindex="0" aria-label="Unlock Repo Timeline">
+            <div class="lock-content">
+              <i class="fas fa-lock lock-icon"></i>
+              <h4>Repo Timeline</h4>
+              <p>Visual history of every repository you've created over time</p>
+              <button class="btn-unlock" tabindex="-1"><i class="fas fa-crown"></i> Unlock with Pro</button>
+            </div>
+          </div>
+          <div class="card" id="timeline-container">
+            <div id="timeline-inner" class="timeline-inner"></div>
+          </div>
+        </div>
+
+        <!-- ── ACHIEVEMENT BADGES (PRO) ── -->
+        <div class="pro-section-wrapper" id="achievements-section">
+          <div class="section-header">
+            <h3 class="section-title"><i class="fas fa-medal"></i> Achievement Badges</h3>
+            <span class="pro-tag">PRO</span>
+          </div>
+          <div id="achievements-lock" class="section-lock-overlay" onclick="showProModal()" role="button" tabindex="0" aria-label="Unlock Achievements">
+            <div class="lock-content">
+              <i class="fas fa-lock lock-icon"></i>
+              <h4>Achievement Badges</h4>
+              <p>Earn badges based on your GitHub activity and milestones</p>
+              <button class="btn-unlock" tabindex="-1"><i class="fas fa-crown"></i> Unlock with Pro</button>
+            </div>
+          </div>
+          <div class="card">
+            <div id="badges-grid" class="badges-grid"></div>
+          </div>
+        </div>
+
+        <!-- ── SHAREABLE PROFILE CARD (PRO) ── -->
+        <div class="pro-section-wrapper" id="profile-card-section">
+          <div class="section-header">
+            <h3 class="section-title"><i class="fas fa-id-card"></i> Shareable Profile Card</h3>
+            <span class="pro-tag">PRO</span>
+          </div>
+          <div id="profile-card-lock" class="section-lock-overlay" onclick="showProModal()" role="button" tabindex="0" aria-label="Unlock Profile Card">
+            <div class="lock-content">
+              <i class="fas fa-lock lock-icon"></i>
+              <h4>Shareable Profile Card</h4>
+              <p>Beautiful card with your score &amp; top stats — download as PNG</p>
+              <button class="btn-unlock" tabindex="-1"><i class="fas fa-crown"></i> Unlock with Pro</button>
+            </div>
+          </div>
+          <div class="card profile-card-wrapper">
+            <div id="shareable-card" class="shareable-card"></div>
+            <div class="profile-card-actions">
+              <button class="export-btn png-btn" onclick="downloadProfileCard()">
+                <i class="fas fa-download"></i> Download PNG
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── ROAST / PRAISE (PRO) ── -->
+        <div class="pro-section-wrapper" id="roast-section">
+          <div class="section-header">
+            <h3 class="section-title"><i class="fas fa-wand-magic-sparkles"></i> GitHub Roast / Praise</h3>
+            <span class="pro-tag">PRO</span>
+          </div>
+          <div id="roast-lock" class="section-lock-overlay" onclick="showProModal()" role="button" tabindex="0" aria-label="Unlock Roast/Praise">
+            <div class="lock-content">
+              <i class="fas fa-lock lock-icon"></i>
+              <h4>GitHub Roast / Praise</h4>
+              <p>A brutally honest (or glowing) AI-style analysis of your GitHub career</p>
+              <button class="btn-unlock" tabindex="-1"><i class="fas fa-crown"></i> Unlock with Pro</button>
+            </div>
+          </div>
+          <div class="card roast-card">
+            <div class="roast-toggle">
+              <button id="roast-tab"  class="roast-tab active" onclick="switchRoastTab('roast')">🔥 Roast me</button>
+              <button id="praise-tab" class="roast-tab"        onclick="switchRoastTab('praise')">🌟 Praise me</button>
+            </div>
+            <div id="roast-output" class="roast-output"></div>
+          </div>
+        </div>
+
+        <!-- ── SHARE & EXPORT (PRO) ── -->
+        <div class="pro-section-wrapper" id="export-section">
+          <div class="section-header">
+            <h3 class="section-title"><i class="fas fa-share-alt"></i> Share &amp; Export</h3>
+            <span class="pro-tag">PRO</span>
+          </div>
+          <div id="export-lock" class="section-lock-overlay" onclick="showProModal()" role="button" tabindex="0" aria-label="Unlock Share and Export">
+            <div class="lock-content">
+              <i class="fas fa-lock lock-icon"></i>
+              <h4>Share &amp; Export</h4>
+              <p>Share your profile link, download PNG, or copy your stats summary</p>
+              <button class="btn-unlock" tabindex="-1"><i class="fas fa-crown"></i> Unlock with Pro</button>
+            </div>
+          </div>
+          <div class="card export-card">
+            <div class="export-buttons">
+              <button id="btn-share" class="export-btn share-btn" onclick="shareStats()">
+                <i class="fas fa-link"></i><span>Share Link</span>
+              </button>
+              <button id="btn-export-png" class="export-btn png-btn" onclick="exportPNG()">
+                <i class="fas fa-image"></i><span>Export PNG</span>
+              </button>
+              <button id="btn-copy-stats" class="export-btn copy-btn" onclick="copyStats()">
+                <i class="fas fa-copy"></i><span>Copy Summary</span>
+              </button>
+            </div>
+            <div id="share-url-row" class="share-url-row hidden">
+              <input type="text" id="share-url-input" class="share-url-input" readonly aria-label="Share URL" />
+              <button onclick="copyShareURL()" class="copy-url-btn" aria-label="Copy URL"><i class="fas fa-copy"></i></button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /dashboard-content -->
+    </div><!-- /dashboard-container -->
+  </section>
+
+  <!-- ═══════════════════════════ COMPARE MODAL ═══════════════════════════ -->
+  <div id="compare-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="compare-modal-title">
+    <div class="modal modal-compare">
+      <button class="modal-close" onclick="closeCompareModal()" aria-label="Close"><i class="fas fa-times"></i></button>
+      <div class="modal-hero">
+        <div class="modal-crown" aria-hidden="true">⚡</div>
+        <h2 id="compare-modal-title">Compare Profiles</h2>
+        <p class="modal-sub">Side-by-side stats for two GitHub users</p>
+      </div>
+
+      <!-- Input row -->
+      <div class="compare-input-row">
+        <div class="compare-user-badge" id="cmp-user-a-badge">
+          <img id="cmp-avatar-a" src="" alt="" />
+          <span id="cmp-name-a">@<span id="cmp-login-a">—</span></span>
+        </div>
+        <span class="compare-vs">VS</span>
+        <div class="compare-search-side">
+          <div class="search-box compare-search-box" id="compare-search-box">
+            <i class="fas fa-search search-icon" aria-hidden="true"></i>
+            <input type="text" id="compare-input" class="search-input"
+              placeholder="Second username…" autocomplete="off" spellcheck="false"
+              aria-label="Second GitHub username" />
+            <button id="compare-go-btn" class="analyze-btn" onclick="startCompare()">
+              <span id="cmp-btn-text">Compare</span>
+              <span id="cmp-btn-loader" class="hidden"><i class="fas fa-spinner fa-spin"></i></span>
+            </button>
+          </div>
+          <div id="compare-error" class="search-error hidden" role="alert"></div>
+        </div>
+      </div>
+
+      <!-- Results (hidden until data loaded) -->
+      <div id="compare-results" class="compare-results hidden">
+        <!-- Profile row -->
+        <div id="cmp-profiles" class="cmp-profiles"></div>
+        <!-- Stat bars -->
+        <div class="cmp-section-title"><i class="fas fa-chart-bar"></i> Head-to-Head</div>
+        <div id="cmp-bars" class="cmp-bars"></div>
+        <!-- Language overlap -->
+        <div class="cmp-section-title"><i class="fas fa-code"></i> Language Overlap</div>
+        <div id="cmp-languages" class="cmp-languages"></div>
+        <!-- Winner badges -->
+        <div class="cmp-section-title"><i class="fas fa-trophy"></i> Winner Badges</div>
+        <div id="cmp-winners" class="cmp-winners"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ PRO UPGRADE MODAL ═══════════════════════════ -->
+  <div id="pro-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pro-modal-title">
+    <div class="modal">
+      <button class="modal-close" onclick="hideProModal()" aria-label="Close modal"><i class="fas fa-times"></i></button>
+      <div class="modal-hero">
+        <div class="modal-crown" aria-hidden="true">👑</div>
+        <h2 id="pro-modal-title">Upgrade to GitStats Pro</h2>
+        <p class="modal-sub">Unlock the full power of GitHub analytics</p>
+      </div>
+      <div class="features-table">
+        <div class="features-col">
+          <h4 class="col-hdr col-free-hdr">Free</h4>
+          <ul class="feat-list">
+            <li class="feat-yes">Profile Section</li>
+            <li class="feat-yes">4 Basic Stats</li>
+            <li class="feat-yes">Top 3 Repositories</li>
+            <li class="feat-no">Charts &amp; Analytics</li>
+            <li class="feat-no">Contribution Heatmap</li>
+            <li class="feat-no">Achievement Badges</li>
+            <li class="feat-no">Export as PNG</li>
+            <li class="feat-no">Share Profile Link</li>
+            <li class="feat-no">All 8 Stat Cards</li>
+          </ul>
+        </div>
+        <div class="features-col features-col-pro">
+          <h4 class="col-hdr col-pro-hdr">Pro ✨</h4>
+          <ul class="feat-list">
+            <li class="feat-yes">Profile Section</li>
+            <li class="feat-yes">All 8 Stat Cards</li>
+            <li class="feat-yes">Top 6 Repositories</li>
+            <li class="feat-yes">5 Analytics Charts</li>
+            <li class="feat-yes">Contribution Heatmap</li>
+            <li class="feat-yes">Achievement Badges</li>
+            <li class="feat-yes">Export as PNG</li>
+            <li class="feat-yes">Share Profile Link</li>
+            <li class="feat-yes">Lifetime License</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <a href="https://gumroad.com/l/gitstats-pro" target="_blank" rel="noopener" class="btn-buy">
+          <i class="fas fa-crown"></i> Get Pro — $24
+        </a>
+        <button class="btn-enter-key" onclick="showLicenseModal()">
+          Already have a key? Enter it here
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ LICENSE KEY MODAL ═══════════════════════════ -->
+  <div id="license-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="license-modal-title">
+    <div class="modal modal-sm">
+      <button class="modal-close" onclick="hideLicenseModal()" aria-label="Close modal"><i class="fas fa-times"></i></button>
+      <div class="modal-hero">
+        <div class="modal-crown" aria-hidden="true">🔑</div>
+        <h2 id="license-modal-title">Enter License Key</h2>
+        <p class="modal-sub">Your Gumroad license key activates Pro features</p>
+      </div>
+      <div class="license-form">
+        <input
+          type="text"
+          id="license-input"
+          class="license-input"
+          placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+          spellcheck="false"
+          aria-label="License key"
+        />
+        <div id="license-error" class="license-error hidden" role="alert"></div>
+        <button id="license-submit" class="btn-validate" onclick="validateLicense()">
+          <span id="license-btn-text">Activate Pro</span>
+          <span id="license-btn-loader" class="hidden" aria-hidden="true"><i class="fas fa-spinner fa-spin"></i></span>
+        </button>
+        <p class="license-note">
+          Don't have a key? <a href="https://gumroad.com/l/gitstats-pro" target="_blank" rel="noopener">Purchase on Gumroad</a>
+        </p>
+        <p class="license-demo-note">
+          Demo key: <code class="demo-key" onclick="useDemoKey()" title="Click to use demo key" role="button" tabindex="0">GITSTATS-PRO-DEMO-2024</code>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ GLOBAL TOAST ═══════════════════════════ -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <!-- ═══════════════════════════ SCRIPTS ═══════════════════════════ -->
+  <script src="js/utils.js"></script>
+  <script src="js/github.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/features.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
