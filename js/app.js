@@ -408,7 +408,10 @@ function applyProState() {
     });
     statLockIds.forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.classList.remove('pro-locked');
+      if (!el) return;
+      el.classList.remove('pro-locked');
+      const overlay = el.querySelector('.pro-lock-overlay');
+      if (overlay) overlay.style.display = 'none';
     });
   }
 }
